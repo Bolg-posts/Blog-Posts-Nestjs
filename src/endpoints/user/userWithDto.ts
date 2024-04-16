@@ -15,6 +15,7 @@ export class userWithDtoCreate {
 
   @IsNotEmpty()
   @IsEmail()
+  @IsString()
   email: string;
 
   @IsNotEmpty()
@@ -32,6 +33,7 @@ export class userWithDtoUpdate {
   name: string;
 
   @IsEmail()
+  @IsString()
   email: string;
 
   @MinLength(8)
