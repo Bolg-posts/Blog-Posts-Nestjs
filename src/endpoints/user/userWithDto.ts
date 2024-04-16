@@ -22,6 +22,9 @@ export class userWithDtoCreate {
   @MinLength(8)
   password: string;
 
+  @IsNotEmpty()
+  image: string;
+
   // @IsArray()
   // @IsString({ each: true })
   // posts: [string];
@@ -38,6 +41,9 @@ export class userWithDtoUpdate {
 
   @MinLength(8)
   password: string;
+
+  @IsNotEmpty()
+  image: string;
 
   // @IsArray()
   // @IsString({ each: true })
