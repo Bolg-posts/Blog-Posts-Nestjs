@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { loginWithDto } from './loginWithDto';
-import { Response } from 'express';
+import { Response, response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -19,7 +19,10 @@ export class UserService {
         email: userData.email.toLowerCase(),
       });
       if (user) {
-        return 'This email already exist';
+        return {
+          message: 'This email already exists',
+          response: response.status(401),
+        };
       }
 
       const passwordHash = await bcrypt.hash(
@@ -32,7 +35,10 @@ export class UserService {
 
       const newUser = new this.UsersModel(userData);
       await newUser.save();
-      return 'You are registered successfully';
+      return {
+        message: 'You are registered successfully',
+        response: response.status(200),
+      };
     } catch (error) {
       console.log(error);
     }
@@ -43,15 +49,15 @@ export class UserService {
       const user = await this.UsersModel.findOne({
         email: userData.email.toLocaleLowerCase(),
       });
-      if (!user) {
-        return 'invalid email or password';
-      }
       const foundedUser = await bcrypt.compare(
         userData.password,
         user.password,
       );
-      if (!foundedUser) {
-        return 'invalid email or password';
+      if (!foundedUser || !user) {
+        return {
+          message: 'invalid email or password',
+          response: response.status(401),
+        };
       }
       const jwt = this.jwt.sign({
         email: user.email,
@@ -59,7 +65,11 @@ export class UserService {
         _id: user._id,
       });
       res.header('jwt', jwt);
-      return { token: jwt };
+      return {
+        token: jwt,
+        message: 'you are logged successfully',
+        response: response.status(200),
+      };
     } catch (error) {
       console.log(error);
     }
