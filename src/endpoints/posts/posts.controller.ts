@@ -3,13 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UsePipes,
   ValidationPipe,
   UseGuards,
   Req,
+  Put,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { postWithDtoCreate, postWithDtoUpdate } from './postWithDto';
@@ -23,6 +23,7 @@ export class PostsController {
   @UseGuards(AuthGuard)
   @Post()
   create(@Body() post: postWithDtoCreate, @Req() request) {
+    console.log(request);
     const req = request.user;
     return this.postsService.create(post, req);
   }
@@ -32,12 +33,14 @@ export class PostsController {
     return this.postsService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updatePostDto: postWithDtoUpdate,

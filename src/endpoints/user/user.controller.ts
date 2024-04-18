@@ -10,10 +10,12 @@ import {
   ValidationPipe,
   Res,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { userWithDtoCreate, userWithDtoUpdate } from './userWithDto';
 import { loginWithDto } from './loginWithDto';
+import { AuthGuard } from './auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -31,6 +33,16 @@ export class UserController {
     return this.userService.login(userData, res);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('useProfiles')
+  getUserProfile(@Req() request) {
+    console.log(request);
+    const user = request.user;
+    const userData = this.userService.getUserProfile(user);
+    console.log(userData);
+    return this.userService.getUserProfile(user);
+  }
+
   @Get()
   findAll() {
     return this.userService.findAll();
@@ -45,6 +57,12 @@ export class UserController {
   update(@Param('id') id: string, @Body() updatedUserData: userWithDtoUpdate) {
     return this.userService.update(id, updatedUserData);
   }
+
+  // @UseGuards(AuthGuard)
+  // @Post('logout')
+  // async logout(@Req() req){
+  //   req.lo
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

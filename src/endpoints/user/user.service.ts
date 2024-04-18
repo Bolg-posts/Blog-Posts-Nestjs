@@ -49,11 +49,17 @@ export class UserService {
       const user = await this.UsersModel.findOne({
         email: userData.email.toLocaleLowerCase(),
       });
+      if (!user) {
+        return {
+          message: 'invalid email or password',
+          response: response.status(401),
+        };
+      }
       const foundedUser = await bcrypt.compare(
         userData.password,
         user.password,
       );
-      if (!foundedUser || !user) {
+      if (!foundedUser) {
         return {
           message: 'invalid email or password',
           response: response.status(401),
@@ -66,13 +72,20 @@ export class UserService {
       });
       res.header('jwt', jwt);
       return {
+        user,
         token: jwt,
         message: 'you are logged successfully',
         response: response.status(200),
+        role: 'Admin',
       };
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getUserProfile(userData) {
+    const user = this.UsersModel.findOne({ email: userData.email });
+    return user;
   }
 
   findAll() {

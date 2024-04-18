@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { postWithDtoCreate, postWithDtoUpdate } from './postWithDto';
+import { response } from 'express';
 
 @Injectable()
 export class PostsService {
@@ -18,7 +19,7 @@ export class PostsService {
         { email: req.email },
         { $push: { posts: newPost } },
       );
-      return newPost;
+      return { newPost, response: response.status(200) };
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +59,7 @@ export class PostsService {
           { _id: id },
           updatedpostData,
         );
-        return updatedPost;
+        return { updatedPost, response: response.status(200) };
       }
     } catch (error) {
       console.log(error);
